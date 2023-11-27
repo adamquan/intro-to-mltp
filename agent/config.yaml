@@ -2,7 +2,7 @@ server:
   log_level: debug
 
 # Configures a metrics scraping service, used to scrape metrics and send
-# to Mimir.
+# to VictoriaMetrics.
 metrics:
   # The `global` section pertains to the Prometheus `global` configuration.
   # See https://prometheus.io/docs/prometheus/latest/configuration/configuration/
@@ -10,23 +10,25 @@ metrics:
     scrape_interval: 15s # By default, scrape targets every 15 seconds.
     # Remote write to the locally running Mimir service.
     remote_write:
-      - url: http://mimir:9009/api/v1/push
+      #- url: http://mimir:9009/api/v1/push
+      #  send_exemplars: true
+      - url: http://victoriametrics:8428/api/v1/write
         send_exemplars: true
 
   # Define a set of configurations for scraping by Grafana Agent.
   configs:
-    - name: mimir
+    - name: victoriametrics
       # The `scrape_configs` section pertains to the Prometheus `scrape_configs`
       # configuration block.
       # See https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config
       scrape_configs:
         # Scrape Mimir metrics.
-        - job_name: 'mimir'
-          static_configs:
-            - targets: ['mimir:9009']
-              labels:
-                service: 'mimir'
-                group: 'infrastructure'
+        #- job_name: 'mimir'
+        #  static_configs:
+        #    - targets: ['mimir:9009']
+        #      labels:
+        #        service: 'mimir'
+        #        group: 'infrastructure'
 
         # Scrape Loki metrics.
         - job_name: 'loki'
@@ -144,19 +146,19 @@ traces:
       #       is left as an example of how Grafana Agent could be used to generate them.
       #
       # Generate Prometheus metrics from the incoming trace spans.
-      #spanmetrics:
-      #  # Add the http.target, http.method and http.status_code span attributes as labels for the metrics data.
-      #  dimensions:
-      #    - name: http.method
-      #    - name: http.target
-      #    - name: http.status_code
-      #    - name: service.version
-      #  # Use the `mimir` metrics configuration above as the basis for sending metrics to Mimir.
-      #  # Note that this won't get scraped, it'll simply use the `remote_write` configuration.
-      #  metrics_instance: mimir
-      ## Enable service graphs for visual representation of services within Grafana.
-      #service_graphs:
-      #  enabled: true
+      spanmetrics:
+        # Add the http.target, http.method and http.status_code span attributes as labels for the metrics data.
+        dimensions:
+          - name: http.method
+          - name: http.target
+          - name: http.status_code
+          - name: service.version
+        # Use the `mimir` metrics configuration above as the basis for sending metrics to Mimir.
+        # Note that this won't get scraped, it'll simply use the `remote_write` configuration.
+        metrics_instance: victoriametrics
+      # Enable service graphs for visual representation of services within Grafana.
+      service_graphs:
+        enabled: true
 
       # An example of how to configure the tail sampler.
       # Remove these comments to only sample traces which contain erroring spans.
