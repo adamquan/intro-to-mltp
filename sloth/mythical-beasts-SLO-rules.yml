@@ -230,3 +230,229 @@ groups:
       summary: High error rate on Mythical Beast login request responses
       title: (ticket) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error budget
         burn rate is too fast.
+- name: sloth-slo-sli-recordings-mythical-beasts-payment-response
+  rules:
+  - record: slo:sli_error:ratio_rate5m
+    expr: |
+      (sum(rate(mythical_request_times_bucket{endpoint="payment", le="200", status!="500"}[5m])))
+      /
+      (sum(rate(mythical_request_times_count{endpoint="payment"}[5m])))
+    labels:
+      owner: aquan
+      sloth_id: mythical-beasts-payment-response
+      sloth_service: mythical-beasts
+      sloth_slo: payment-response
+      sloth_window: 5m
+      tier: "2"
+      type: slo
+  - record: slo:sli_error:ratio_rate30m
+    expr: |
+      (sum(rate(mythical_request_times_bucket{endpoint="payment", le="200", status!="500"}[30m])))
+      /
+      (sum(rate(mythical_request_times_count{endpoint="payment"}[30m])))
+    labels:
+      owner: aquan
+      sloth_id: mythical-beasts-payment-response
+      sloth_service: mythical-beasts
+      sloth_slo: payment-response
+      sloth_window: 30m
+      tier: "2"
+      type: slo
+  - record: slo:sli_error:ratio_rate1h
+    expr: |
+      (sum(rate(mythical_request_times_bucket{endpoint="payment", le="200", status!="500"}[1h])))
+      /
+      (sum(rate(mythical_request_times_count{endpoint="payment"}[1h])))
+    labels:
+      owner: aquan
+      sloth_id: mythical-beasts-payment-response
+      sloth_service: mythical-beasts
+      sloth_slo: payment-response
+      sloth_window: 1h
+      tier: "2"
+      type: slo
+  - record: slo:sli_error:ratio_rate2h
+    expr: |
+      (sum(rate(mythical_request_times_bucket{endpoint="payment", le="200", status!="500"}[2h])))
+      /
+      (sum(rate(mythical_request_times_count{endpoint="payment"}[2h])))
+    labels:
+      owner: aquan
+      sloth_id: mythical-beasts-payment-response
+      sloth_service: mythical-beasts
+      sloth_slo: payment-response
+      sloth_window: 2h
+      tier: "2"
+      type: slo
+  - record: slo:sli_error:ratio_rate6h
+    expr: |
+      (sum(rate(mythical_request_times_bucket{endpoint="payment", le="200", status!="500"}[6h])))
+      /
+      (sum(rate(mythical_request_times_count{endpoint="payment"}[6h])))
+    labels:
+      owner: aquan
+      sloth_id: mythical-beasts-payment-response
+      sloth_service: mythical-beasts
+      sloth_slo: payment-response
+      sloth_window: 6h
+      tier: "2"
+      type: slo
+  - record: slo:sli_error:ratio_rate1d
+    expr: |
+      (sum(rate(mythical_request_times_bucket{endpoint="payment", le="200", status!="500"}[1d])))
+      /
+      (sum(rate(mythical_request_times_count{endpoint="payment"}[1d])))
+    labels:
+      owner: aquan
+      sloth_id: mythical-beasts-payment-response
+      sloth_service: mythical-beasts
+      sloth_slo: payment-response
+      sloth_window: 1d
+      tier: "2"
+      type: slo
+  - record: slo:sli_error:ratio_rate3d
+    expr: |
+      (sum(rate(mythical_request_times_bucket{endpoint="payment", le="200", status!="500"}[3d])))
+      /
+      (sum(rate(mythical_request_times_count{endpoint="payment"}[3d])))
+    labels:
+      owner: aquan
+      sloth_id: mythical-beasts-payment-response
+      sloth_service: mythical-beasts
+      sloth_slo: payment-response
+      sloth_window: 3d
+      tier: "2"
+      type: slo
+  - record: slo:sli_error:ratio_rate30d
+    expr: |
+      sum_over_time(slo:sli_error:ratio_rate5m{sloth_id="mythical-beasts-payment-response", sloth_service="mythical-beasts", sloth_slo="payment-response"}[30d])
+      / ignoring (sloth_window)
+      count_over_time(slo:sli_error:ratio_rate5m{sloth_id="mythical-beasts-payment-response", sloth_service="mythical-beasts", sloth_slo="payment-response"}[30d])
+    labels:
+      owner: aquan
+      sloth_id: mythical-beasts-payment-response
+      sloth_service: mythical-beasts
+      sloth_slo: payment-response
+      sloth_window: 30d
+      tier: "2"
+      type: slo
+- name: sloth-slo-meta-recordings-mythical-beasts-payment-response
+  rules:
+  - record: slo:objective:ratio
+    expr: vector(0.9990000000000001)
+    labels:
+      owner: aquan
+      sloth_id: mythical-beasts-payment-response
+      sloth_service: mythical-beasts
+      sloth_slo: payment-response
+      tier: "2"
+      type: slo
+  - record: slo:error_budget:ratio
+    expr: vector(1-0.9990000000000001)
+    labels:
+      owner: aquan
+      sloth_id: mythical-beasts-payment-response
+      sloth_service: mythical-beasts
+      sloth_slo: payment-response
+      tier: "2"
+      type: slo
+  - record: slo:time_period:days
+    expr: vector(30)
+    labels:
+      owner: aquan
+      sloth_id: mythical-beasts-payment-response
+      sloth_service: mythical-beasts
+      sloth_slo: payment-response
+      tier: "2"
+      type: slo
+  - record: slo:current_burn_rate:ratio
+    expr: |
+      slo:sli_error:ratio_rate5m{sloth_id="mythical-beasts-payment-response", sloth_service="mythical-beasts", sloth_slo="payment-response"}
+      / on(sloth_id, sloth_slo, sloth_service) group_left
+      slo:error_budget:ratio{sloth_id="mythical-beasts-payment-response", sloth_service="mythical-beasts", sloth_slo="payment-response"}
+    labels:
+      owner: aquan
+      sloth_id: mythical-beasts-payment-response
+      sloth_service: mythical-beasts
+      sloth_slo: payment-response
+      tier: "2"
+      type: slo
+  - record: slo:period_burn_rate:ratio
+    expr: |
+      slo:sli_error:ratio_rate30d{sloth_id="mythical-beasts-payment-response", sloth_service="mythical-beasts", sloth_slo="payment-response"}
+      / on(sloth_id, sloth_slo, sloth_service) group_left
+      slo:error_budget:ratio{sloth_id="mythical-beasts-payment-response", sloth_service="mythical-beasts", sloth_slo="payment-response"}
+    labels:
+      owner: aquan
+      sloth_id: mythical-beasts-payment-response
+      sloth_service: mythical-beasts
+      sloth_slo: payment-response
+      tier: "2"
+      type: slo
+  - record: slo:period_error_budget_remaining:ratio
+    expr: 1 - slo:period_burn_rate:ratio{sloth_id="mythical-beasts-payment-response",
+      sloth_service="mythical-beasts", sloth_slo="payment-response"}
+    labels:
+      owner: aquan
+      sloth_id: mythical-beasts-payment-response
+      sloth_service: mythical-beasts
+      sloth_slo: payment-response
+      tier: "2"
+      type: slo
+  - record: sloth_slo_info
+    expr: vector(1)
+    labels:
+      owner: aquan
+      sloth_id: mythical-beasts-payment-response
+      sloth_mode: cli-gen-prom
+      sloth_objective: "99.9"
+      sloth_service: mythical-beasts
+      sloth_slo: payment-response
+      sloth_spec: prometheus/v1
+      sloth_version: v0.11.0
+      tier: "2"
+      type: slo
+- name: sloth-slo-alerts-mythical-beasts-payment-response
+  rules:
+  - alert: MythicalBeastsSlowResponse-payment
+    expr: |
+      (
+          max(slo:sli_error:ratio_rate5m{sloth_id="mythical-beasts-payment-response", sloth_service="mythical-beasts", sloth_slo="payment-response"} > (14.4 * 0.0009999999999999432)) without (sloth_window)
+          and
+          max(slo:sli_error:ratio_rate1h{sloth_id="mythical-beasts-payment-response", sloth_service="mythical-beasts", sloth_slo="payment-response"} > (14.4 * 0.0009999999999999432)) without (sloth_window)
+      )
+      or
+      (
+          max(slo:sli_error:ratio_rate30m{sloth_id="mythical-beasts-payment-response", sloth_service="mythical-beasts", sloth_slo="payment-response"} > (6 * 0.0009999999999999432)) without (sloth_window)
+          and
+          max(slo:sli_error:ratio_rate6h{sloth_id="mythical-beasts-payment-response", sloth_service="mythical-beasts", sloth_slo="payment-response"} > (6 * 0.0009999999999999432)) without (sloth_window)
+      )
+    labels:
+      category: availability
+      sloth_severity: page
+      type: slo
+    annotations:
+      summary: Slow reponse on Mythical Beast payment request responses
+      title: (page) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error budget
+        burn rate is too fast.
+  - alert: MythicalBeastsSlowResponse-payment
+    expr: |
+      (
+          max(slo:sli_error:ratio_rate2h{sloth_id="mythical-beasts-payment-response", sloth_service="mythical-beasts", sloth_slo="payment-response"} > (3 * 0.0009999999999999432)) without (sloth_window)
+          and
+          max(slo:sli_error:ratio_rate1d{sloth_id="mythical-beasts-payment-response", sloth_service="mythical-beasts", sloth_slo="payment-response"} > (3 * 0.0009999999999999432)) without (sloth_window)
+      )
+      or
+      (
+          max(slo:sli_error:ratio_rate6h{sloth_id="mythical-beasts-payment-response", sloth_service="mythical-beasts", sloth_slo="payment-response"} > (1 * 0.0009999999999999432)) without (sloth_window)
+          and
+          max(slo:sli_error:ratio_rate3d{sloth_id="mythical-beasts-payment-response", sloth_service="mythical-beasts", sloth_slo="payment-response"} > (1 * 0.0009999999999999432)) without (sloth_window)
+      )
+    labels:
+      category: availability
+      sloth_severity: ticket
+      type: slo
+    annotations:
+      summary: Slow reponse on Mythical Beast payment request responses
+      title: (ticket) {{$labels.sloth_service}} {{$labels.sloth_slo}} SLO error budget
+        burn rate is too fast.

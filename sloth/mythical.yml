@@ -1,0 +1,41 @@
+version: "prometheus/v1"
+service: "mythical-beasts"
+labels:
+  owner: "aquan"
+  tier: "2"
+  type: "slo"
+slos:
+  # We allow failing (5xx and 429) 1 of every 20 requests (95%).
+  - name: "login-availability"
+    objective: 95.0
+    description: "Common SLO based on availability for HTTP request responses."
+    sli:
+      events:
+        error_query: sum by (http_target)(increase(traces_spanmetrics_calls_total{service_name="mythical-server",http_target=~"/login", status_code="STATUS_CODE_ERROR"}[{{.window}}]))
+        total_query: sum by (http_target)(increase(traces_spanmetrics_calls_total{service_name="mythical-server",http_target=~"/login", status_code!=""}[{{.window}}]))
+    alerting:
+      name: MythicalBeastsHighErrorRate-login
+      labels:
+        category: "availability"
+        type: "slo"
+      annotations:
+        # Overwrite default Sloth SLO alert summmary on ticket and page alerts.
+        summary: "High error rate on Mythical Beast login request responses"
+
+  # Mythical Payment service returns in <200ms
+  # We allow 1 of every 1000 successful payment request (99.9%) to be over 200ms
+  - name: "payment-response"
+    objective: 99.9
+    description: "99.9% of successful (without 500s) payment service returns in <200ms"
+    sli:
+      events:
+        error_query: sum(rate(mythical_request_times_bucket{endpoint="payment", le="200", status!="500"}[{{.window}}]))
+        total_query: sum(rate(mythical_request_times_count{endpoint="payment"}[{{.window}}]))
+    alerting:
+      name: MythicalBeastsSlowResponse-payment
+      labels:
+        category: "availability"
+        type: "slo"
+      annotations:
+        # Overwrite default Sloth SLO alert summmary on ticket and page alerts.
+        summary: "Slow reponse on Mythical Beast payment request responses"
